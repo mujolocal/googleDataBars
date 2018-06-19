@@ -1,5 +1,5 @@
 import numpy as np
-import matplotlib.pyplot as plt
+from bokeh.plotting import figure, output_file, show
 """
 from dem_simulator import Demographics as Dem
 dem = Dem()
@@ -33,6 +33,28 @@ class Demographics(object):
     
     # starting with mondays the weeks population
     week_pop = []
+    colors = [
+    "#000000",
+    "#295F6F",
+    "#963561",
+    "#B2A23F",
+    "#B2793F",
+    "#78A33A",
+    "#49337A",
+    ]
+    name_o_days = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+    ]
+    hour_o_day =  [
+    "630","730","830","930","1030","1130","1230","1330","1430","1530","1630"
+    ,"1730","1830","1930","2030","2130",'2230'
+    ]
     
 
 
@@ -120,7 +142,11 @@ class Demographics(object):
             self.week_pop.append(temp_array)
     
     def create_week_graph(self):
-        pass
+         for x in range(len(colors)):
+            b = np.arange(0,len(a[x]))
+            plt.plot(b,a[x],color=colors[x], animated = True, lw="2.0",label=name_o_days[x])
+            plt.legend()
+            plt.grid(True)
             
             
             
@@ -134,7 +160,7 @@ class Demographics(object):
         # sat = self.week_data[5]
         # sun = self.week_data[6]
         
-    def iso_varibble(list,id):
+    def iso_varibble(self,list,id):
         new_list = []
         for item in list:
             new_list.append(item[id])
