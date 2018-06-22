@@ -1,5 +1,7 @@
 import numpy as np
-from bokeh.plotting import figure, output_file, show
+import pandas as pd
+from bokeh.plotting import figure, output_file, show, ColumnDataSource
+from bokeh.models import HoverTool
 """
 from dem_simulator import Demographics as Dem
 dem = Dem()
@@ -34,13 +36,13 @@ class Demographics(object):
     # starting with mondays the weeks population
     week_pop = []
     colors = [
-    "#000000",
-    "#295F6F",
-    "#963561",
-    "#B2A23F",
-    "#B2793F",
-    "#78A33A",
-    "#49337A",
+    "#c6e3cb",
+    "#9ed5cd",
+    "#83cacf",
+    "#47aed0",
+    "#3984b6",
+    "#2c5a9c",
+    "#1e3082",
     ]
     name_o_days = [
     "Monday",
@@ -51,10 +53,11 @@ class Demographics(object):
     "Saturday",
     "Sunday",
     ]
-    hour_o_day =  [
-    "630","730","830","930","1030","1130","1230","1330","1430","1530","1630"
-    ,"1730","1830","1930","2030","2130",'2230'
-    ]
+    # hour_o_day =  [
+    # "730","830","930","1030","1130","1230","1330","1430","1530","1630"
+    # ,"1730","1830","1930","2030","2130",
+    # ]
+    hour_o_day =[i for i in range(15)]
     
 
 
@@ -118,6 +121,7 @@ class Demographics(object):
             self.week_data.append(temp_day_data)
 
     def norm_metric(self, optimum, real):
+        # normalizes all features so they may be added to random ness
         x = np.abs(optimum-real)
         if x==0:
             return 2
@@ -129,24 +133,44 @@ class Demographics(object):
             return -1
             
     def set_optimum(density,volume,music_type, patron_age):
+        # set the values that are normalized agaianst
         self.density_optimum = density
         self.volume_optimum = volume
         self.music_type_optimum = music_type
         self.ave_patron_age = patron_age
     
     def create_week_data(self):
+        # create one week of data
         if self.week_data == []:
             self.create_pop()
         for x in range(len(self.week_data)):
             temp_array = self.iso_varibble(self.week_data[x],"pop")
             self.week_pop.append(temp_array)
     
-    def create_week_graph(self):
-         for x in range(len(colors)):
-            b = np.arange(0,len(a[x]))
-            plt.plot(b,a[x],color=colors[x], animated = True, lw="2.0",label=name_o_days[x])
-            plt.legend()
-            plt.grid(True)
+    def create_week_graph(self, graph_name = "sim.html"):
+        # where file is going
+        output_file(graph_name)
+        source = ColumnDataSource(
+            data=dict(
+                x=self.hour_o_day,
+                y=self.week_pop[0],
+                
+            )
+        )
+        hover = HoverTool(
+            tooltips=[
+                ("index","$index"),
+                ("(x,y)","($x,$y)"),
+            ]
+        )
+        p = figure(width=800, height=800, tools = [hover], title="monday",x_axis_type="datetime",)
+        p.circle("x","y",size=10,source=source,  color = self.colors[0])
+        p.line(x=self.hour_o_day,y=self.week_pop[0], line_width=5,color=self.colors[0])
+        show(p)
+        
+        # create graphs for week of data mon-sun all on same graph
+         
+            
             
             
             
@@ -171,4 +195,5 @@ class Demographics(object):
 
 if __name__ == "__main__":
     dem = Demographics()
-    dem.create_pop()
+    dem.create_week_data()
+    dem.create_week_graph()
