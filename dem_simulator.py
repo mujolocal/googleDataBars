@@ -1,7 +1,4 @@
 import numpy as np
-import pandas as pd
-from bokeh.plotting import figure, output_file, show, ColumnDataSource
-from bokeh.models import HoverTool
 """
 from dem_simulator import Demographics as Dem
 dem = Dem()
@@ -35,24 +32,10 @@ class Demographics(object):
     
     # starting with mondays the weeks population
     week_pop = []
-    colors = [
-    "#c6e3cb",
-    "#9ed5cd",
-    "#83cacf",
-    "#47aed0",
-    "#3984b6",
-    "#2c5a9c",
-    "#1e3082",
-    ]
-    name_o_days = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday",
-    ]
+    week_volume = []
+    week_density = []
+    
+    
     # hour_o_day =  [
     # "730","830","930","1030","1130","1230","1330","1430","1530","1630"
     # ,"1730","1830","1930","2030","2130",
@@ -146,27 +129,41 @@ class Demographics(object):
         for x in range(len(self.week_data)):
             temp_array = self.iso_varibble(self.week_data[x],"pop")
             self.week_pop.append(temp_array)
+            
+    def create_week_volume_data(self):
+        if self.week_data == []:
+            self.create_pop()
+        for x in range(len(self.week_data)):
+            temp_array = self.iso_varibble(self.week_data[x],"vol")
+            self.week_volume.append(temp_array)
     
-    def create_week_graph(self, graph_name = "sim.html"):
-        # where file is going
-        output_file(graph_name)
-        source = ColumnDataSource(
-            data=dict(
-                x=self.hour_o_day,
-                y=self.week_pop[0],
-                
-            )
-        )
-        hover = HoverTool(
-            tooltips=[
-                ("index","$index"),
-                ("(x,y)","($x,$y)"),
-            ]
-        )
-        p = figure(width=800, height=800, tools = [hover], title="monday",x_axis_type="datetime",)
-        p.circle("x","y",size=10,source=source,  color = self.colors[0])
-        p.line(x=self.hour_o_day,y=self.week_pop[0], line_width=5,color=self.colors[0])
-        show(p)
+    def create_week_density_data(self):
+        if self.week_data == []:
+            self.create_pop()
+        for x in range(len(self.week_data)):
+            temp_array = self.iso_varibble(self.week_data[x],"den")
+            self.week_density.append(temp_array)
+    
+    # def create_week_graph(self, graph_name = "sim.html"):
+    #     # where file is going
+    #     output_file(graph_name)
+    #     source = ColumnDataSource(
+    #         data=dict(
+    #             x=self.hour_o_day,
+    #             y=self.week_pop[0],
+    # 
+    #         )
+    #     )
+    #     hover = HoverTool(
+    #         tooltips=[
+    #             ("index","$index"),
+    #             ("(x,y)","($x,$y)"),
+    #         ]
+    #     )
+    #     p = figure(width=800, height=800, tools = [hover], title="monday",x_axis_type="datetime",)
+    #     p.circle("x","y",size=10,source=source,  color = self.colors[0])
+    #     p.line(x=self.hour_o_day,y=self.week_pop[0], line_width=5,color=self.colors[0])
+    #     show(p)
         
         # create graphs for week of data mon-sun all on same graph
          
