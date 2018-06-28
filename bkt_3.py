@@ -10,6 +10,7 @@ import datetime as dt
 import numpy as np
 from bokeh.plotting import figure, show, output_file,ColumnDataSource
 from bokeh.models import formatters
+from bokeh.models.tools import HoverTool
 from dem_simulator import Demographics as Dem
 
 colors = [
@@ -32,9 +33,9 @@ name_o_days = [
 ]
 
 dem = Dem()
-dem.create_week_data()
-dem.create_week_volume_data()
-dem.create_week_density_data()
+dem.create_week_pop()
+dem.create_week_volume()
+dem.create_week_density()
 days = [1]
 
 time_format = formatters.DatetimeTickFormatter()
@@ -47,14 +48,15 @@ time_var =[datetime]
 
 
 
-    
+output_file("week1.html")
+p = figure( width = 1200,height=650,title="Week",x_axis_type="datetime", logo = None,tools="pan, wheel_zoom,reset", active_drag="pan")#fill week    
 for day in range(7):
     time_var = [datetime]
-    hours_open = len(dem.week_pop[day]-1)
+    hours_open = len(dem.week_pop[day])-1
     for x in range(hours_open):
         datetime = datetime+one_hour
         time_var.append(datetime)
-    datetime= datetime+one_day
+    # datetime= datetime+one_day
     datetime = datetime - hours_open*one_hour
     source = ColumnDataSource(dict(
         x=time_var,
@@ -64,19 +66,19 @@ for day in range(7):
 
 
     ))
-
-    TOOLTIPS = [
+    hover = HoverTool()
+    hover.tooltips = [
         ("(x,y)","($x,$y)"),
         ("volume","@volume"),
         ("density","@density")
 
     ]
-    output_file("week1.html".format(day))
-    p = figure( width = 750,height=750,title="Week",x_axis_type="datetime", logo = None,tools="pan, wheel_zoom,reset,hover", active_drag="pan", tooltips=TOOLTIPS)#fill week
+    
     
     p.xaxis.formatter= time_format
     p.yaxis.axis_label = "Population"
     p.xaxis.axis_label = "Time"
-    p.circle("x","y",source=source,legend="{0}".format(day))
-    p.line("x","y",source=source,)
+    p.circle("x","y",source=source,legend="{0}".format(name_o_days[day]),color = colors[day])
+    p.line("x","y",source=source,color = colors[day])
+p.tools.append(hover)
 show(p)

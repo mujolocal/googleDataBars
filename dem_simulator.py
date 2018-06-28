@@ -2,7 +2,7 @@ import numpy as np
 """
 from dem_simulator import Demographics as Dem
 dem = Dem()
-dem.create_pop()
+dem.create_week_data()
 """
 class Demographics(object):
     # template data form == [
@@ -58,7 +58,7 @@ class Demographics(object):
         if capacity != None:
             self.max_capacity = capacity
 
-    def create_pop(self):
+    def create_week_data(self):
         for day in self.week_template_data:
             temp_day_data = []
             temp_music = np.random.randint(1,6)
@@ -107,13 +107,13 @@ class Demographics(object):
         # normalizes all features so they may be added to random ness
         x = np.abs(optimum-real)
         if x==0:
-            return 2
+            return 5
         elif x==1:
-            return 1
+            return 3
         elif x==2:
-            return -1
+            return -3
         elif x>2:
-            return -1
+            return -7
             
     def set_optimum(density,volume,music_type, patron_age):
         # set the values that are normalized agaianst
@@ -122,27 +122,38 @@ class Demographics(object):
         self.music_type_optimum = music_type
         self.ave_patron_age = patron_age
     
-    def create_week_data(self):
+    def create_week_pop(self):
         # create one week of data
         if self.week_data == []:
-            self.create_pop()
+            self.create_week_data()
         for x in range(len(self.week_data)):
             temp_array = self.iso_varibble(self.week_data[x],"pop")
             self.week_pop.append(temp_array)
             
-    def create_week_volume_data(self):
+    def create_week_volume(self):
         if self.week_data == []:
-            self.create_pop()
+            self.create_week_data()
         for x in range(len(self.week_data)):
             temp_array = self.iso_varibble(self.week_data[x],"vol")
             self.week_volume.append(temp_array)
     
-    def create_week_density_data(self):
+    def create_week_density(self):
         if self.week_data == []:
-            self.create_pop()
+            self.create_week_data()
         for x in range(len(self.week_data)):
             temp_array = self.iso_varibble(self.week_data[x],"den")
             self.week_density.append(temp_array)
+    
+    def create_month_pop(self):
+        if self.week_data == []:
+            self.create_month_data()
+        
+    def create_month_volume(self):
+        if self.week_data == []:
+            self.create_week_data()
+    def create_month_density(self):
+        if self.week_data == []:
+            self.create_week_data()
     
     # def create_week_graph(self, graph_name = "sim.html"):
     #     # where file is going
